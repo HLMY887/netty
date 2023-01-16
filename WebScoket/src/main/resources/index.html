@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>聊吧聊吧</title>
+</head>
+<style type="text/css">
+    .box {
+        width: 500px;
+        height: 300px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto;
+    }
+</style>
+<body>
+<script type="text/javascript">
+    var socket;
+    if (!window.WebSocket) {
+        window.WebSocket = window.MozWebSocket;
+    }
+    if (window.WebSocket) {
+        socket = new WebSocket("ws://127.0.0.1:1818/ws");
+        socket.onmessage = function (event) {
+            let ta = document.getElementById('responseText');
+            ta.value = ta.value + '\n' + event.data
+        };
+        socket.onopen = function (event) {
+            let ta = document.getElementById('flag');
+            ta.innerText = "连接开启!";
+            ta.style.color="#00FF00"
+        };
+        socket.onclose = function (event) {
+            let ta = document.getElementById('flag');
+            ta.innerText = "连接被关闭";
+            ta.style.color="#FF0000"
+        };
+    } else {
+        alert("你的浏览器不支持 WebSocket！");
+    }
+
+    function send(message) {
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState == WebSocket.OPEN) {
+            socket.send(message);
+            document.getElementById('input1').value = ''
+        } else {
+            alert("连接没有开启.");
+        }
+    }
+</script>
+<div class="box">
+    <form onsubmit="return false;">
+        <h3>聊吧聊吧 聊天室：</h3>
+        <h5 id="flag"></h5>
+        <textarea id="responseText" style="width: 500px; height: 300px;"></textarea>
+        <br>
+        <input id="input1" type="text" name="message" style="width: 300px" value="">
+        <input type="button" value="发送消息" onclick="send(this.form.message.value)">
+    </form>
+</div>
+</body>
+</html>
